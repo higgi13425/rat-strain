@@ -1,0 +1,25 @@
+---
+title: "rat-strain-test"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidymodels)
+library(readxl)
+library(janitor)
+```
+
+## Reading in Data
+
+We will start with a single file of the 42? files
+all located at Dropbox
+/US_nonlinearRO1_2015/RTNSBS30-shear strain map/
+
+```{r read}
+backwall_32_4 <-readxl::read_xlsx("EI_Backwall2RTNBS32-4shearcorrected_Res_UNKNOWN_UNKNOWN_PlotData_1-159.xlsx") %>% 
+  clean_names
+```
+
+
