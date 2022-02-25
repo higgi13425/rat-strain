@@ -11,6 +11,11 @@ library(readxl)
 library(janitor)
 ```
 
+## Big question - can we differentiate acute from chronic.
+These are coded (acute = week 1, chronic = week 6)
+
+which match categories 2 and 4 in Laura sent data table
+
 ## Reading in Data
 
 We will start with a single file of the 42? files
@@ -22,14 +27,13 @@ backwall_32_4 <-readxl::read_xlsx("EI_Backwall2RTNBS32-4shearcorrected_Res_UNKNO
   clean_names
 ```
 
-This contains 159 rows, delineated by time (0-10 seconds), for one rat. Is this one push?
+This contains 159 rows, delineated by time (0-10 seconds), for one rat. This represents one push, with 6 ROIs for this particular rat.
 
 
 Select a manageable set of columns
 ```{r}
-backwall_32_4 %>% 
-  select(time_seconds, contains("shear_strain")) %>% 
-  names()
+select <- backwall_32_4 %>% 
+  select(time_seconds, contains("shear_strain_along_axis")) 
 ```
 total of 85 col
 Get 
@@ -38,3 +42,24 @@ Get
 - shear_strain_along_axis_hd_segment_roi (1-18)(1-18)
 - shear_strain_across_axis (6)
 - shear_strain_across_axis_hd_segment_roi (1-18)(1-18)
+
+```{r}
+select %>% 
+  select(time_seconds, contains("along") & !contains("roi")) %>% 
+  pivot_longer(
+    cols = contains("along"),
+    names_to = "seg",
+    names_prefix = "shear_strain_along_axis_hd_segment_",
+    values_to = "ss_along_ax",
+    values_drop_na = TRUE
+  ) %>% 
+  filter(seg==6) %>% 
+  mutate(slope = min(ss_along_ax) - max(ss_along_ax)/(max(time_seconds) - min(time_seconds)))
+```
+
+- should we include sub-roi data?
+- how do we collapse across ROIs? throw out some?
+- how do we collapse across time points? slope?
+acceleration? remove zero time? remove points where it is unchanging?
+
+- possibly slope by segment, then throw out segments with outlying slope? or take median slope? Exclude early and late times (when flattens out)
