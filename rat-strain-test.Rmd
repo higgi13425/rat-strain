@@ -22,4 +22,19 @@ backwall_32_4 <-readxl::read_xlsx("EI_Backwall2RTNBS32-4shearcorrected_Res_UNKNO
   clean_names
 ```
 
+This contains 159 rows, delineated by time (0-10 seconds), for one rat. Is this one push?
 
+
+Select a manageable set of columns
+```{r}
+backwall_32_4 %>% 
+  select(time_seconds, contains("shear_strain")) %>% 
+  names()
+```
+total of 85 col
+Get 
+- time_seconds
+- shear_strain_along_axis (6)
+- shear_strain_along_axis_hd_segment_roi (1-18)(1-18)
+- shear_strain_across_axis (6)
+- shear_strain_across_axis_hd_segment_roi (1-18)(1-18)
